@@ -1,0 +1,26 @@
+import numpy as np
+import matplotlib.pyplot as plt
+
+# Configuración de la simulación
+np.random.seed(42)
+num_steps = 100
+mean_step = 0
+std_dev_step = 1
+
+# Simulación de la caminata aleatoria
+steps = np.random.normal(loc=mean_step, scale=std_dev_step, size=num_steps)
+walk = np.cumsum(steps)
+
+# Gráfico de la caminata aleatoria
+plt.plot(walk)
+plt.title('Caminata Aleatoria')
+plt.xlabel('Pasos')
+plt.ylabel('Posición')
+plt.show()
+
+# Razonamiento probabilístico: Probabilidad de estar en cierta posición después de ciertos pasos
+final_position = walk[-1]
+probability_at_zero = np.mean(walk == 0)
+
+print(f"La posición final de la caminata aleatoria es {final_position}.")
+print(f"La probabilidad de estar en la posición 0 es aproximadamente {probability_at_zero:.2%}.")
