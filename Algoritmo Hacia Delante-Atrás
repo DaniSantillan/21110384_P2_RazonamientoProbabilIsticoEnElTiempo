@@ -1,0 +1,44 @@
+# Importar la librería necesaria
+import numpy as np
+
+# Definir el modelo de transición (probabilidades de cambiar de estado)
+transitions = np.array([[0.5, 0.5],  # Si es par, 50% de probabilidad de seguir siendo par o cambiar a impar
+                        [0.5, 0.5]]) # Si es impar, 50% de probabilidad de seguir siendo impar o cambiar a par
+
+# Definir las probabilidades iniciales (estado inicial)
+initial_prob = np.array([0.5, 0.5])  # Inicialmente, 50% de probabilidad de ser par o impar
+
+# Definir las observaciones (lanzamientos del dado)
+observations = [2, 4, 6]
+
+# Inicializar variables forward y backward
+forward = np.zeros((len(observations), len(initial_prob)))
+backward = np.zeros((len(observations), len(initial_prob)))
+
+# Paso Forward
+for t, observation in enumerate(observations):
+    # Calcular la probabilidad de la observación dada cada estado
+    observation_prob = np.array([1 if obs == observation else 0 for obs in range(1, 7)])
+    
+    if t == 0:
+        # En el primer paso, la probabilidad forward es simplemente la probabilidad inicial multiplicada por la probabilidad de observación
+        forward[t, :] = initial_prob * observation_prob
+    else:
+        # En los pasos siguientes, la probabilidad forward se calcula considerando las transiciones y la probabilidad de observación
+        forward[t, :] = np.dot(forward[t - 1, :], transitions) * observation_prob
+
+# Paso Backward
+for t in range(len(observations) - 1, -1, -1):
+    if t == len(observations) - 1:
+        # En el último paso, la probabilidad backward es simplemente 1 para todos los estados
+        backward[t, :] = 1
+    else:
+        # En los pasos anteriores, la probabilidad backward se calcula considerando las transiciones y la probabilidad de observación
+        backward[t, :] = np.dot(transitions, backward[t + 1, :] * [1 if obs == observations[t + 1] else 0 for obs in range(1, 7)])
+
+# Calcular las probabilidades marginales
+marginal_prob = forward * backward / np.sum(forward * backward, axis=1, keepdims=True)
+
+# Imprimir las probabilidades marginales para cada paso de tiempo
+for t in range(len(observations)):
+    print(f"Paso {t + 1}: Probabilidad par = {marginal_prob[t, 0]:.4f}, Probabilidad impar = {marginal_prob[t, 1]:.4f}")
