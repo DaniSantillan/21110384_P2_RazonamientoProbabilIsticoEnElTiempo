@@ -1,0 +1,37 @@
+import numpy as np
+
+# Función de transición del estado del robot (movimiento)
+def transition_model(x, u):
+    # Simplemente agregamos un ruido gaussiano al movimiento
+    return x + u + np.random.normal(0, 1)
+
+# Función de observación (medición)
+def observation_model(x):
+    # Simulamos la medición de la distancia con ruido gaussiano
+    return x + np.random.normal(0, 2)
+
+# Generar partículas iniciales
+num_particles = 1000
+particles = np.random.uniform(0, 10, num_particles)
+
+# Movimiento del robot (cambio en el estado)
+movement = 1
+
+# Medición observada
+measurement = 7
+
+# Actualizar las partículas basadas en el modelo de transición y observación
+for i in range(num_particles):
+    particles[i] = transition_model(particles[i], movement)
+    # Calcular la probabilidad de la observación dada la partícula
+    observation_prob = np.exp(-(observation_model(particles[i]) - measurement)**2 / (2 * 2**2))
+    # Actualizar el peso de la partícula
+    particles[i] *= observation_prob
+
+# Normalizar los pesos
+particles /= np.sum(particles)
+
+# Estimación final de la posición del robot
+estimated_position = np.sum(particles)
+
+print("Posición estimada del robot:", estimated_position)
