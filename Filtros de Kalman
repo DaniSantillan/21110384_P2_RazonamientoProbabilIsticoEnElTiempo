@@ -1,0 +1,48 @@
+import numpy as np
+import matplotlib.pyplot as plt
+
+# Parámetros del sistema
+dt = 1.0  # intervalo de tiempo
+A = np.array([[1, dt], [0, 1]])  # matriz de transición de estado
+H = np.array([[1, 0]])  # matriz de observación
+
+# Covarianza del proceso y de la medición
+Q = np.array([[0.1, 0], [0, 0.01]])  # covarianza del proceso
+R = np.array([[0.5]])  # covarianza de la medición
+
+# Condiciones iniciales
+x0 = np.array([0, 0])  # estado inicial
+P0 = np.array([[1, 0], [0, 1]])  # covarianza inicial
+
+# Generar datos simulados
+np.random.seed(42)
+true_position = np.linspace(0, 10, 100)
+measurement_noise = np.random.normal(0, np.sqrt(R[0, 0]), 100)
+measurements = true_position + measurement_noise
+
+# Inicializar el filtro de Kalman
+x_est = x0
+P_est = P0
+x_estimates = []
+
+# Aplicar el filtro de Kalman
+for z in measurements:
+    # Predicción
+    x_pred = np.dot(A, x_est)
+    P_pred = np.dot(np.dot(A, P_est), A.T) + Q
+
+    # Actualización (corrección) basada en la medición
+    K = np.dot(np.dot(P_pred, H.T), np.linalg.inv(np.dot(np.dot(H, P_pred), H.T) + R))
+    x_est = x_pred + np.dot(K, (z - np.dot(H, x_pred)))
+    P_est = P_pred - np.dot(np.dot(K, H), P_pred)
+
+    x_estimates.append(x_est[0])
+
+# Visualizar los resultados
+plt.plot(true_position, label='Posición real')
+plt.plot(measurements, 'ro', label='Mediciones')
+plt.plot(x_estimates, 'g-', label='Estimaciones de Kalman')
+plt.legend()
+plt.xlabel('Tiempo')
+plt.ylabel('Posición')
+plt.show()
