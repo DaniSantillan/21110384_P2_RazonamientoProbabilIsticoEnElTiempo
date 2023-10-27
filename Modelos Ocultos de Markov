@@ -1,0 +1,18 @@
+import numpy as np
+from hmmlearn import hmm
+
+# Definir el modelo HMM
+modelo = hmm.GaussianHMM(n_components=2, covariance_type="full")
+
+# Datos observados (en este caso, una secuencia de observaciones de longitud 5)
+observaciones = np.array([[1.0], [1.5], [2.0], [0.5], [0.0]])
+
+# Ajustar el modelo con las observaciones
+modelo.fit(observaciones)
+
+# Generar nuevas observaciones y predecir el estado oculto en cada paso de tiempo
+nuevas_observaciones, estados_ocultos = modelo.sample(n_samples=5)
+
+# Imprimir los resultados
+print("Observaciones generadas:", nuevas_observaciones)
+print("Estados ocultos predichos:", estados_ocultos)
