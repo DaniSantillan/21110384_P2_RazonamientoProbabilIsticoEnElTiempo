@@ -1,0 +1,19 @@
+import numpy as np
+
+# Definir la matriz de transición
+transicion = np.array([[0.7, 0.3],
+                       [0.4, 0.6]])
+
+# Estado inicial
+estado_actual = np.array([0.6, 0.4])
+
+# Número de pasos de tiempo
+num_pasos = 5
+
+# Simulación del proceso de Markov en el tiempo
+for paso in range(num_pasos):
+    # Actualizar el estado actual multiplicando por la matriz de transición
+    estado_actual = np.dot(estado_actual, transicion)
+    
+    # Imprimir el estado en cada paso de tiempo
+    print(f"Paso {paso + 1}: {estado_actual}")
